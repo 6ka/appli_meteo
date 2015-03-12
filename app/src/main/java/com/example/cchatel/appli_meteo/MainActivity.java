@@ -1,5 +1,7 @@
 package com.example.cchatel.appli_meteo;
 
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -11,14 +13,19 @@ import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -31,32 +38,9 @@ public class MainActivity extends ActionBarActivity {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
-        HttpClient httpclient = new DefaultHttpClient();
-        HttpGet httpget = new HttpGet("http://www.infoclimat.fr/public-api/gfs/json?_ll=48.85341,2.3488&_auth=ABoEEw5wU3ECL1ptB3FVfFE5AjcBdwUiVChXNFw5Uy4Eb1Q1D28GYFE%2FA35TfFJkU34CYQswUmILYAJ6DH5RMABqBGgOZVM0Am1aPwcoVX5RfwJjASEFIlQwVzlcL1M4BG5ULg9uBmRROQN%2FU2JSZVNiAn0LK1JrC2wCZwxlUTIAYwRiDmRTNQJtWicHKFVkUWYCNwE%2BBTVUYVc3XGJTYwRiVDMPZQZjUTwDf1NmUmdTaAJnCzxSagtoAmMMflEtABoEEw5wU3ECL1ptB3FVfFE3AjwBag%3D%3D&_c=e0a28c0708e4309b36a9bfabf9763677");
-        try {
-            HttpResponse response = httpclient.execute(httpget);
-            if(response != null) {
-                String line = "";
-                HttpEntity httpEntity = response.getEntity();
-                line = EntityUtils.toString(httpEntity);
-                Log.i("Main", "lines " + line);
-                JSONObject theObject = new JSONObject(line);
-                TextView mTxtDisplay = (TextView) findViewById(R.id.txt);
-                mTxtDisplay.setText("Response is: "+ theObject.getJSONObject("2015-03-12 09:00:00").getJSONObject("temperature").getString("sol"));
-            } else {
-                Toast.makeText(this, "Unable to complete your request", Toast.LENGTH_LONG).show();
-            }
-        } catch (ClientProtocolException e) {
-            Toast.makeText(this, "Caught ClientProtocolException", Toast.LENGTH_SHORT).show();
-            Log.e("test",e.toString());
-        } catch (IOException e) {
-            Toast.makeText(this, "Caught IOException", Toast.LENGTH_SHORT).show();
-            Log.e("test",e.toString());
-        } catch (Exception e) {
-            Toast.makeText(this, "Caught Exception", Toast.LENGTH_SHORT).show();
-            Log.e("test",e.toString());
-        }
-            }
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        new WebServiceRequestor("http://www.infoclimat.fr/public-api/gfs/json?_ll=48.85341,2.3488&_auth=ABoEEw5wU3ECL1ptB3FVfFE5AjcBdwUiVChXNFw5Uy4Eb1Q1D28GYFE%2FA35TfFJkU34CYQswUmILYAJ6DH5RMABqBGgOZVM0Am1aPwcoVX5RfwJjASEFIlQwVzlcL1M4BG5ULg9uBmRROQN%2FU2JSZVNiAn0LK1JrC2wCZwxlUTIAYwRiDmRTNQJtWicHKFVkUWYCNwE%2BBTVUYVc3XGJTYwRiVDMPZQZjUTwDf1NmUmdTaAJnCzxSagtoAmMMflEtABoEEw5wU3ECL1ptB3FVfFE3AjwBag%3D%3D&_c=e0a28c0708e4309b36a9bfabf9763677", params).execute();
+    }
 
 
     @Override
@@ -79,5 +63,63 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class WebServiceRequestor extends AsyncTask<String, Void, String> {
+        private ProgressDialog pDialog;
+        String URL;
+        List<NameValuePair> parameters;
+        public WebServiceRequestor(String url, List<NameValuePair> params)
+        {
+            this.URL = url;
+            this.parameters = params;
+        }
+
+        @Override
+        protected String doInBackground(String... params)
+        {
+            try
+            {
+                DefaultHttpClient httpClient = new DefaultHttpClient();
+                HttpEntity httpEntity = null;
+                HttpResponse httpResponse = null;
+                HttpPost httpPost = new HttpPost(URL);
+                if (parameters != null)
+                {
+                    httpPost.setEntity(new UrlEncodedFormEntity(parameters));
+                }
+                httpResponse = httpClient.execute(httpPost);
+                httpEntity = httpResponse.getEntity();
+                return EntityUtils.toString(httpEntity);
+            } catch (Exception e)
+            {
+            }
+            return "";
+        }
+        @Override
+        protected void onPostExecute(String result)
+        {
+            pDialog.dismiss();
+            TextView txt = (TextView) findViewById(R.id.txt);
+            try {
+                JSONObject theObject = new JSONObject(result);
+                txt.setText("Response is: "+ theObject.getJSONObject("2015-03-12 09:00:00").getJSONObject("temperature").getString("sol"));
+            } catch (Exception e){
+                txt.setText("Error during process");
+            }
+            super.onPostExecute(result);
+        }
+        @Override
+        protected void onPreExecute() {
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Processing Request...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+            super.onPreExecute();
+        }
+        @Override
+        protected void onProgressUpdate(Void... values) {
+        }
     }
 }
