@@ -24,7 +24,9 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -101,9 +103,11 @@ public class MainActivity extends ActionBarActivity {
         {
             pDialog.dismiss();
             TextView txt = (TextView) findViewById(R.id.txt);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String date = sdf.format(new Date());
             try {
                 JSONObject theObject = new JSONObject(result);
-                txt.setText("Response is: "+ theObject.getJSONObject("2015-03-12 09:00:00").getJSONObject("temperature").getString("sol"));
+                txt.setText("Response is: "+ theObject.getJSONObject(date + " 12:00:00").getJSONObject("temperature").getString("sol"));
             } catch (Exception e){
                 txt.setText("Error during process");
             }
