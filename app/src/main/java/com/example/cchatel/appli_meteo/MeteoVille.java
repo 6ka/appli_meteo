@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -97,6 +98,7 @@ public class MeteoVille extends ListActivity {
         @Override
         protected void onPostExecute(String result)
         {
+            Log.i("", "PostExecute");
             pDialog.dismiss();
             ArrayList<HashMap<String, String>> listItem = new ArrayList<HashMap<String, String>>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -124,7 +126,7 @@ public class MeteoVille extends ListActivity {
                     map.put("pluie", theObject.getJSONObject(current_date + " 12:00:00").getString("pluie"));
                     map.put("vent", theObject.getJSONObject(current_date + " 12:00:00").getJSONObject("vent_moyen").getString("10m"));
                     listItem.add(map);
-                    SimpleAdapter mSchedule = new SimpleAdapter (this.getBaseContext(), listItem,
+                    SimpleAdapter mSchedule = new SimpleAdapter (MeteoVille.this.getBaseContext(), listItem,
                             R.layout.activity_meteo_ville,
                             new String[] {"temperature", "pluie", "vent"}, new int[] {R.id.temp, R.id.pluie,
                             R.id.vent});
@@ -132,18 +134,21 @@ public class MeteoVille extends ListActivity {
 
                 }
             } catch (Exception e){
-                list.setText("Error during process");
+
             }
             super.onPostExecute(result);
+            Log.i("", "FinPostExecute");
         }
         @Override
         protected void onPreExecute() {
+            Log.d("PONEY", "PreExecute");
             pDialog = new ProgressDialog(MeteoVille.this);
             pDialog.setMessage("Processing Request...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
             pDialog.show();
             super.onPreExecute();
+            Log.i("", "FinPreExecute");
         }
         @Override
         protected void onProgressUpdate(Void... values) {
