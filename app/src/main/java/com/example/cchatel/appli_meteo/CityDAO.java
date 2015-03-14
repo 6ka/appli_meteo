@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+
 public class CityDAO{
         public static final String TABLE_NAME = "city";
         public static final String KEY = "id";
@@ -59,6 +61,19 @@ public class CityDAO{
             c.close();
 
             return city;
+        }
+
+        public ArrayList<City> getAllCities(){
+            ArrayList<City> cities = new ArrayList<>();
+            Cursor c = mDb.rawQuery("select * from " + TABLE_NAME, new String[]{KEY, NAME, LONGITUDE, LATITUDE});
+            c.moveToFirst();
+            while(!c.isAfterLast()){
+                City city = cursorToCity(c);
+                c.moveToNext();
+                cities.add(city);
+            }
+            c.close();
+            return cities;
         }
 
         public City cursorToCity(Cursor c){
