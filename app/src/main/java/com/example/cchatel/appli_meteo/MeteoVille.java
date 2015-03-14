@@ -126,13 +126,14 @@ public class MeteoVille extends ListActivity {
                 for (int i = 0; i < dates.size(); i++) {
                     String current_date = dates.get(i);
                     HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("date", dates.get(i));
                     map.put("temperature", theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol"));
                     map.put("pluie", theObject.getJSONObject(current_date + " 15:00:00").getString("pluie"));
                     map.put("vent", theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m"));
                     listItem.add(map);
                     SimpleAdapter mSchedule = new SimpleAdapter (MeteoVille.this.getBaseContext(), listItem,
                             R.layout.activity_meteo_ville,
-                            new String[] {"temperature", "pluie", "vent"}, new int[] {R.id.temp, R.id.pluie,
+                            new String[] {"date", "temperature", "pluie", "vent"}, new int[] {R.id.date, R.id.temp, R.id.pluie,
                             R.id.vent});
                     setListAdapter(mSchedule);
 
