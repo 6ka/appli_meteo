@@ -18,15 +18,16 @@
         <activity
             android:name=".MeteoVille"
             android:label="@string/title_activity_meteo_ville" >
-        </activity>
-        <activity
-            android:name=".Favoris"
-            android:label="@string/title_activity_favoris" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+        <activity
+            android:name=".Favoris"
+            android:label="@string/title_activity_favoris" >
         </activity>
     </application>
 

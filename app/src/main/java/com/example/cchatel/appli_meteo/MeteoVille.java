@@ -37,7 +37,9 @@ public class MeteoVille extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_meteo_ville);
+        setContentView(R.layout.activity_listview);
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        new WebServiceRequestor("http://www.infoclimat.fr/public-api/gfs/json?_ll=48.85341,2.3488&_auth=ABoEEw5wU3ECL1ptB3FVfFE5AjcBdwUiVChXNFw5Uy4Eb1Q1D28GYFE%2FA35TfFJkU34CYQswUmILYAJ6DH5RMABqBGgOZVM0Am1aPwcoVX5RfwJjASEFIlQwVzlcL1M4BG5ULg9uBmRROQN%2FU2JSZVNiAn0LK1JrC2wCZwxlUTIAYwRiDmRTNQJtWicHKFVkUWYCNwE%2BBTVUYVc3XGJTYwRiVDMPZQZjUTwDf1NmUmdTaAJnCzxSagtoAmMMflEtABoEEw5wU3ECL1ptB3FVfFE3AjwBag%3D%3D&_c=e0a28c0708e4309b36a9bfabf9763677", params).execute();
     }
 
 
@@ -98,7 +100,7 @@ public class MeteoVille extends ListActivity {
         @Override
         protected void onPostExecute(String result)
         {
-            Log.i("", "PostExecute");
+            Log.i("ONPOST", "PostExecute");
             pDialog.dismiss();
             ArrayList<HashMap<String, String>> listItem = new ArrayList<HashMap<String, String>>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -118,13 +120,15 @@ public class MeteoVille extends ListActivity {
             dates.add(date_tomorrow);
             dates.add(date_2_days_later);
             try {
+                Log.i("ONPOST", "Avant récupération !");
                 JSONObject theObject = new JSONObject(result);
+                Log.i("ONPOST", "JSON récupéré !");
                 for (int i = 0; i < dates.size(); i++) {
                     String current_date = dates.get(i);
                     HashMap<String, String> map = new HashMap<String, String>();
-                    map.put("temperature", theObject.getJSONObject(current_date + " 12:00:00").getJSONObject("temperature").getString("sol"));
-                    map.put("pluie", theObject.getJSONObject(current_date + " 12:00:00").getString("pluie"));
-                    map.put("vent", theObject.getJSONObject(current_date + " 12:00:00").getJSONObject("vent_moyen").getString("10m"));
+                    map.put("temperature", theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol"));
+                    map.put("pluie", theObject.getJSONObject(current_date + " 15:00:00").getString("pluie"));
+                    map.put("vent", theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m"));
                     listItem.add(map);
                     SimpleAdapter mSchedule = new SimpleAdapter (MeteoVille.this.getBaseContext(), listItem,
                             R.layout.activity_meteo_ville,
@@ -134,7 +138,7 @@ public class MeteoVille extends ListActivity {
 
                 }
             } catch (Exception e){
-
+                Log.i("ONPOST", "Erreur !");
             }
             super.onPostExecute(result);
             Log.i("", "FinPostExecute");
