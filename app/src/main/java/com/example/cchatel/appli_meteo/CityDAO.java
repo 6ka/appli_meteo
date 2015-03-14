@@ -1,23 +1,45 @@
 package com.example.cchatel.appli_meteo;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
-public class CityDAO extends DAOBase{
+public class CityDAO{
         public static final String TABLE_NAME = "city";
         public static final String KEY = "id";
         public static final String NAME = "name";
         public static final String LONGITUDE = "longitude";
         public static final String LATITUDE = "latitude";
+        protected final static int VERSION = 1;
+        // Le nom du fichier qui représente ma base
+        protected final static String NOM = "city2.db";
 
-        public static final String TABLE_CREATE = "CREATE TABLE " + TABLE_NAME + " (" + KEY + " INTEGER PRIMARY KEY AUTOINCREMENT, " + NAME + " TEXT, " + LONGITUDE + " REAL" +LATITUDE + " REAL" +");";
+        protected SQLiteDatabase mDb = null;
+        protected DatabaseHandler mHandler = null;
+
+        public static final String TABLE_CREATE = "CREATE TABLE " + TABLE_NAME + " (" + KEY + " INTEGER PRIMARY KEY AUTOINCREMENT, " + NAME + " TEXT, " + LONGITUDE + " TEXT, " +LATITUDE + " TEXT);";
 
         public static final String TABLE_DROP =  "DROP TABLE IF EXISTS " + TABLE_NAME + ";";
 
+        public CityDAO(Context pContext) {
+            this.mHandler = new DatabaseHandler(pContext, NOM, null, VERSION);
+        }
 
-        /**
-         * @param m le métier à ajouter à la base
-         */
+        public SQLiteDatabase open() {
+            // Pas besoin de fermer la dernière base puisque getWritableDatabase s'en charge
+            mDb = mHandler.getWritableDatabase();
+            return mDb;
+        }
+
+        public void close() {
+            mDb.close();
+        }
+
+        public SQLiteDatabase getDb() {
+            return mDb;
+        }
+
         public void add(City c) {
             ContentValues value = new ContentValues();
             value.put(CityDAO.NAME, c.getName());
@@ -26,16 +48,10 @@ public class CityDAO extends DAOBase{
             mDb.insert(CityDAO.TABLE_NAME, null, value);
         }
 
-        /**
-         * @param id l'identifiant du métier à supprimer
-         */
         public void delete(long id) {
             mDb.delete(TABLE_NAME, KEY + " = ?", new String[] {String.valueOf(id)});
         }
 
-        /**
-         * @param id l'identifiant du métier à récupérer
-         */
         public City select(long id) {
             Cursor c = mDb.rawQuery("select * from " + TABLE_NAME + " id =?", new String[]{KEY, NAME, LONGITUDE, LATITUDE});
             c.moveToFirst();

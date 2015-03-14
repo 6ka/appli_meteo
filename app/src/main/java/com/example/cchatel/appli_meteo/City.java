@@ -14,6 +14,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,7 +22,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-public class City {
+public class City implements Serializable{
+    private static final long serialVersionUID = -7;
     private int id;
     private String name;
     private String longitude;
@@ -33,6 +35,12 @@ public class City {
 
     public City(String name) {
         this.name = name;
+    }
+
+    public City(String name, String longitude, String latitude) {
+        this.name = name;
+        this.longitude = longitude;
+        this.latitude = latitude;
     }
 
     public String getName() {

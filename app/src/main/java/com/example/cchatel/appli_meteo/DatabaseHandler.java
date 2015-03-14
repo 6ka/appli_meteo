@@ -14,9 +14,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String CITY_TABLE_CREATE =
             "CREATE TABLE " + CITY_TABLE_NAME + " (" +
                     CITY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    CITY_NAME + " TEXT" +
+                    CITY_NAME + " TEXT, " +
                     CITY_LONGITUDE + " TEXT, " +
                     CITY_LATITUDE + " TEXT);";
+
+    public static final String METIER_TABLE_DROP = "DROP TABLE IF EXISTS " + CITY_TABLE_NAME + ";";
 
     public DatabaseHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -26,8 +28,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CITY_TABLE_CREATE);
     }
-
-    public static final String METIER_TABLE_DROP = "DROP TABLE IF EXISTS " + CITY_TABLE_NAME + ";";
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

@@ -1,6 +1,7 @@
 package com.example.cchatel.appli_meteo;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
@@ -113,11 +114,18 @@ public class SearchCity extends ActionBarActivity {
                 Log.i("ONPOST", "JSON récupéré !");
 
                 JSONObject resultObject = theObject.getJSONArray("results").getJSONObject(0);
+                String name = resultObject.getJSONArray("address_components").getJSONObject(0).getString("long_name");
                 String longitude = resultObject.getJSONObject("geometry").getJSONObject("location").getString("lng");
                 String latitude = resultObject.getJSONObject("geometry").getJSONObject("location").getString("lat");
                 Log.i("LONGITUDE", longitude);
+                Log.i("NOM", name);
+                City city = new City(name, longitude, latitude);
+                CityDAO dao = new CityDAO(SearchCity.this);
+                dao.open();
+                dao.add(city);
+                dao.close();
             } catch (Exception e){
-                Log.i("ONPOST", "Erreur !");
+                Log.i("ONPOST", e.getMessage());
             }
             super.onPostExecute(result);
             Log.i("", "FinPostExecute");
