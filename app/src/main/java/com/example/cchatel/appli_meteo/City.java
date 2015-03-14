@@ -22,9 +22,14 @@ import java.util.HashMap;
 import java.util.List;
 
 public class City {
+    private int id;
     private String name;
     private String longitude;
     private String latitude;
+
+    public City(){
+
+    }
 
     public City(String name) {
         this.name = name;
@@ -34,11 +39,23 @@ public class City {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getLongitude() {
         return longitude;
     }
 
-    public String getLattitude() {
+    public String getLatitude() {
         return latitude;
     }
 
