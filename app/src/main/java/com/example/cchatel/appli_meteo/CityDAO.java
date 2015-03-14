@@ -65,12 +65,13 @@ public class CityDAO{
 
         public ArrayList<City> getAllCities(){
             ArrayList<City> cities = new ArrayList<>();
-            Cursor c = mDb.rawQuery("select * from " + TABLE_NAME, new String[]{KEY, NAME, LONGITUDE, LATITUDE});
+            Cursor c = mDb.rawQuery("select * from " + TABLE_NAME, null);
             c.moveToFirst();
             while(!c.isAfterLast()){
                 City city = cursorToCity(c);
-                c.moveToNext();
                 cities.add(city);
+                c.moveToNext();
+
             }
             c.close();
             return cities;

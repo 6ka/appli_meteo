@@ -22,15 +22,15 @@
         <activity
             android:name=".Favoris"
             android:label="@string/title_activity_favoris" >
-        </activity>
-        <activity
-            android:name=".SearchCity"
-            android:label="@string/title_activity_search_city" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".SearchCity"
+            android:label="@string/title_activity_search_city" >
         </activity>
     </application>
 

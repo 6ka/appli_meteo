@@ -16,41 +16,26 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Favoris extends ListActivity {
 
-
-    String[] FAVORIS = getFavoris();
-
-    static public String[] getFavoris(){
-        ArrayList<String> favoris = new ArrayList<String>();
-        try {
-            //FileReader fileReader = new FileReader("C:/Users/chate_000/Documents/Centrale/OMIS/Android/appli_meteo/app/src/main/java/com/example/cchatel/appli_meteo/favoris.txt");
-            FileReader fileReader = new FileReader("favoris.txt");
-            Log.i("FAVORIS","A récupéré le fichier");
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line = null;
-            while ((line = bufferedReader.readLine()) != null) {
-                favoris.add(line);
-            }
-            bufferedReader.close();
-            Log.i("FAVORIS", "A pu récupérer lire les lignes");
-        }
-        catch(Exception e){
-            Log.i("FAVORIS", "Erreur");
-        }
-        return favoris.toArray(new String[favoris.size()]);
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ListView myListView = getListView();
-        ArrayAdapter<String> aa = new ArrayAdapter < String > (this,
-        R.layout.activity_favoris, FAVORIS);
+        CityDAO dao = new CityDAO(this);
+        dao.open();
+        ArrayList<City> cities = dao.getAllCities();
+        dao.close();
+        ArrayList<String> cityNames = new ArrayList<>();
+        for (City city : cities){
+            cityNames.add(city.getName());
+        }
+        ArrayAdapter<String> aa = new ArrayAdapter<String>(this,R.layout.activity_favoris, cityNames);
         myListView.setAdapter(aa);
         myListView.setTextFilterEnabled(true);
     }
