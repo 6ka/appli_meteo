@@ -47,6 +47,14 @@ public class SearchCity extends ActionBarActivity {
             }
         });
 
+        Button btnFav = (Button) findViewById(R.id.buttonFav);
+        btnFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(SearchCity.this, Favoris.class);
+                startActivity(myIntent);
+            }
+        });
     }
 
 

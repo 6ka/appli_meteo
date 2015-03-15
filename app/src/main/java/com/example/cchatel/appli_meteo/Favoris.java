@@ -1,26 +1,18 @@
 package com.example.cchatel.appli_meteo;
 
 import android.app.ListActivity;
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.Button;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Array;
+import org.apache.http.NameValuePair;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 
 public class Favoris extends ListActivity {
@@ -28,7 +20,7 @@ public class Favoris extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_listview);
+        setContentView(R.layout.activity_favoris);
         CityDAO dao = new CityDAO(this);
         dao.open();
         ArrayList<City> cities = dao.getAllCities();
@@ -42,9 +34,16 @@ public class Favoris extends ListActivity {
             listItem.add(cityNames);
         }
         SimpleAdapter mSchedule = new SimpleAdapter (this.getBaseContext(), listItem,
-                R.layout.activity_favoris, new String[] {"name", "button"},
+                R.layout.activity_favoris_sublist, new String[] {"name", "button"},
                 new int[] {R.id.name, R.id.button});
         setListAdapter(mSchedule);
+
+        Button buttonAdd = (Button) findViewById(R.id.button2);
+        buttonAdd.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent monIntent = new Intent(Favoris.this, SearchCity.class);
+                startActivity(monIntent);
+            }});
     }
 
 
