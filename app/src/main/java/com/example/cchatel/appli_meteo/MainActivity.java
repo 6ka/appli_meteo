@@ -2,6 +2,7 @@ package com.example.cchatel.appli_meteo;
 
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
@@ -9,6 +10,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,9 +32,11 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends ListActivity {
@@ -73,6 +78,16 @@ public class MainActivity extends ListActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        HashMap<String, String> map = (HashMap<String, String>) getListAdapter().getItem(position);
+        Intent monIntent = new Intent( MainActivity.this, MeteoVille.class );
+        for(String currentKey : map.keySet()) {
+            monIntent.putExtra(currentKey, map.get(currentKey));
+        }
+        startActivity(monIntent);
     }
 
     private class WebServiceRequestor extends AsyncTask<String, Void, ArrayList<String>> {
@@ -138,11 +153,37 @@ public class MainActivity extends ListActivity {
                 String result = results.get(i);
                 //TextView txt = (TextView) findViewById(R.id.txt);
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                String date = sdf.format(new Date());
-                map.put("name", cities.get(i).getName());
+                City currentCity = cities.get(i);
+                map.put("name", currentCity.getName());
+                map.put("longitude", currentCity.getLongitude());
+                map.put("latitude", currentCity.getLatitude());
+
+                String date_today = sdf.format(new Date());
+                Calendar c = Calendar.getInstance();
+                Date dt = new Date();
+                c.setTime(dt);
+                c.add(Calendar.DATE, 1);
+                dt = c.getTime();
+                String date_tomorrow = sdf.format(dt);
+                c.setTime(dt);
+                c.add(Calendar.DATE, 1);
+                dt = c.getTime();
+                String date_2_days_later = sdf.format(dt);
+                ArrayList<String> dates = new ArrayList<String>();
+                dates.add(date_today);
+                dates.add(date_tomorrow);
+                dates.add(date_2_days_later);
+
                 try {
                     JSONObject theObject = new JSONObject(result);
-                    map.put("temp", theObject.getJSONObject(date + " 12:00:00").getJSONObject("temperature").getString("sol"));
+                    for (int j = 0; j < dates.size(); j++) {
+                        String current_date = dates.get(j);
+                        map.put("date"+Integer.toString(j), dates.get(j));
+                        map.put("temp"+Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol"));
+                        map.put("pluie"+Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getString("pluie"));
+                        map.put("vent"+Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m"));
+                    }
+
                 } catch (Exception e) {
                     map.put("temp", "Error during process");
                 }
@@ -150,10 +191,11 @@ public class MainActivity extends ListActivity {
             }
             SimpleAdapter mSchedule = new SimpleAdapter (MainActivity.this.getBaseContext(), listItem,
                     R.layout.activity_main,
-                    new String[] {"name", "temp"}, new int[] {R.id.name, R.id.txt});
+                    new String[] {"name", "temp0"}, new int[] {R.id.name, R.id.txt});
             MainActivity.this.setListAdapter(mSchedule);
             super.onPostExecute(results);
         }
+
         @Override
         protected void onPreExecute() {
             pDialog = new ProgressDialog(MainActivity.this);
