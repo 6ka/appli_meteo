@@ -70,18 +70,18 @@ public class MainActivity extends ListActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.home:
-                Log.i("MENU", "Clic sur home");
-                Intent homeIntent = new Intent(this, MainActivity.class);
-                homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(homeIntent);
-            case R.id.fav:
-                Log.i("MENU", "Clic sur favoris");
-                Intent favIntent = new Intent(this, Favoris.class);
-                startActivity(favIntent);
+        int id = item.getItemId();
+        if (id == R.id.home) {
+            Log.i("MENU", "Clic sur home");
+            Intent homeIntent = new Intent(this, MainActivity.class);
+            homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(homeIntent);
         }
-
+        else if (id == R.id.fav) {
+            Log.i("MENU", "Clic sur favoris");
+            Intent favIntent = new Intent(this, Favoris.class);
+            startActivity(favIntent);
+        }
         return super.onOptionsItemSelected(item);
     }
 
