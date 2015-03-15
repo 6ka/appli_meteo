@@ -70,6 +70,8 @@ public class MeteoVille extends ListActivity {
                         R.id.temp, R.id.vent});
                 setListAdapter(mSchedule);
             } else {
+                TextView name = (TextView) findViewById(R.id.name);
+                name.setText("Your Location");
                 City city = new City(values.get("longitude"), values.get("latitude"));
                 ArrayList<City> cities = new ArrayList<>();
                 cities.add(city);
@@ -198,6 +200,7 @@ public class MeteoVille extends ListActivity {
                 map.put("name", currentCity.getName());
                 map.put("longitude", currentCity.getLongitude());
                 map.put("latitude", currentCity.getLatitude());
+                Log.i("POSTEXECUTE", currentCity.getLongitude());
 
                 String date_today = sdf.format(new Date());
                 Calendar c = Calendar.getInstance();
@@ -219,20 +222,20 @@ public class MeteoVille extends ListActivity {
                     JSONObject theObject = new JSONObject(result);
                     for (int j = 0; j < dates.size(); j++) {
                         String current_date = dates.get(j);
-                        map.put("date" + Integer.toString(j), dates.get(j));
-                        map.put("temp" + Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol"));
-                        map.put("pluie" + Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getString("pluie"));
-                        map.put("vent" + Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m"));
+                        map.put("date", dates.get(j));
+                        map.put("temp", theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol"));
+                        map.put("pluie", theObject.getJSONObject(current_date + " 15:00:00").getString("pluie"));
+                        map.put("vent", theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m"));
+                        listItem.add(map);
                     }
 
                 } catch (Exception e) {
                     map.put("temp", "Error during process");
                 }
-                listItem.add(map);
             }
             SimpleAdapter mSchedule = new SimpleAdapter(MeteoVille.this.getBaseContext(), listItem,
                     R.layout.activity_meteo_ville,
-                    new String[]{"name", "date", "pluie", "temp", "vent"}, new int[]{R.id.title, R.id.date, R.id.pluie,
+                    new String[]{"date", "pluie", "temp", "vent"}, new int[]{R.id.date, R.id.pluie,
                     R.id.temp, R.id.vent});
             MeteoVille.this.setListAdapter(mSchedule);
             super.onPostExecute(results);
