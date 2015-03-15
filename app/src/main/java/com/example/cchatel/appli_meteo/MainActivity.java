@@ -1,5 +1,6 @@
 package com.example.cchatel.appli_meteo;
 
+import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.StrictMode;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,24 +26,30 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_listview);
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
         List<NameValuePair> params = new ArrayList<NameValuePair>();
-        new WebServiceRequestor("http://www.infoclimat.fr/public-api/gfs/json?_ll=48.85341,2.3488&_auth=ABoEEw5wU3ECL1ptB3FVfFE5AjcBdwUiVChXNFw5Uy4Eb1Q1D28GYFE%2FA35TfFJkU34CYQswUmILYAJ6DH5RMABqBGgOZVM0Am1aPwcoVX5RfwJjASEFIlQwVzlcL1M4BG5ULg9uBmRROQN%2FU2JSZVNiAn0LK1JrC2wCZwxlUTIAYwRiDmRTNQJtWicHKFVkUWYCNwE%2BBTVUYVc3XGJTYwRiVDMPZQZjUTwDf1NmUmdTaAJnCzxSagtoAmMMflEtABoEEw5wU3ECL1ptB3FVfFE3AjwBag%3D%3D&_c=e0a28c0708e4309b36a9bfabf9763677", params).execute();
+        CityDAO dao = new CityDAO(this);
+        dao.open();
+        ArrayList<City> cities = dao.getAllCities();
+        dao.close();
+        new WebServiceRequestor(cities, params).execute();
     }
 
 
@@ -67,51 +75,84 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class WebServiceRequestor extends AsyncTask<String, Void, String> {
+    private class WebServiceRequestor extends AsyncTask<String, Void, ArrayList<String>> {
         private ProgressDialog pDialog;
-        String URL;
+        ArrayList<City> cities;
         List<NameValuePair> parameters;
-        public WebServiceRequestor(String url, List<NameValuePair> params)
+        String defaultURLBeginning;
+        String defaultURLEnd;
+        public WebServiceRequestor(ArrayList<City> cities, List<NameValuePair> params)
         {
-            this.URL = url;
+            this.defaultURLBeginning = "http://www.infoclimat.fr/public-api/gfs/json?_ll=";
+            this.defaultURLEnd = "&_auth=ABoEEw5wU3ECL1ptB3FVfFE5AjcBdwUiVC"+
+            "hXNFw5Uy4Eb1Q1D28GYFE%2FA35TfFJkU34CYQswUmILYAJ6DH5RMABqBGgOZVM0"+
+            "Am1aPwcoVX5RfwJjASEFIlQwVzlcL1M4BG5ULg9uBmRROQN%2FU2JSZVNiAn0LK1JrC"+
+            "2wCZwxlUTIAYwRiDmRTNQJtWicHKFVkUWYCNwE%2BBTVUYVc3XGJTYwRiVDMPZQ"+
+            "ZjUTwDf1NmUmdTaAJnCzxSagtoAmMMflEtABoEEw5wU3ECL1ptB3FVfFE3AjwBag%3"+
+            "D%3D&_c=e0a28c0708e4309b36a9bfabf9763677";
+            this.cities = cities;
             this.parameters = params;
         }
 
         @Override
-        protected String doInBackground(String... params)
+        protected ArrayList<String> doInBackground(String... params)
         {
-            try
-            {
-                DefaultHttpClient httpClient = new DefaultHttpClient();
-                HttpEntity httpEntity = null;
-                HttpResponse httpResponse = null;
-                HttpPost httpPost = new HttpPost(URL);
-                if (parameters != null)
-                {
-                    httpPost.setEntity(new UrlEncodedFormEntity(parameters));
-                }
-                httpResponse = httpClient.execute(httpPost);
-                httpEntity = httpResponse.getEntity();
-                return EntityUtils.toString(httpEntity);
-            } catch (Exception e)
-            {
+            if (cities.size() == 0){
+                setContentView(R.layout.activity_no_fav);
             }
-            return "";
+            else {
+                ArrayList<String> returns = new ArrayList<>();
+                for (City city : cities) {
+                    try {
+                        DefaultHttpClient httpClient = new DefaultHttpClient();
+                        HttpEntity httpEntity = null;
+                        HttpResponse httpResponse = null;
+                        String URL = this.defaultURLBeginning + city.getLatitude() + "," + city.getLongitude() + this.defaultURLEnd;
+                        HttpPost httpPost = new HttpPost(URL);
+                        if (parameters != null) {
+                            httpPost.setEntity(new UrlEncodedFormEntity(parameters));
+                        }
+                        httpResponse = httpClient.execute(httpPost);
+                        httpEntity = httpResponse.getEntity();
+                        returns.add(EntityUtils.toString(httpEntity));
+                        //return EntityUtils.toString(httpEntity);
+                    } catch (Exception e) {
+                    }
+                    Log.i("BACKGROUND", Integer.toString(cities.size()));
+                    Log.i("BACKGROUND", Integer.toString(returns.size()));
+                }
+                return returns;
+            }
+            return new ArrayList<String>();
         }
         @Override
-        protected void onPostExecute(String result)
+        protected void onPostExecute(ArrayList<String> results)
         {
+            Log.i("POST","Entre dans le post-execute");
             pDialog.dismiss();
-            TextView txt = (TextView) findViewById(R.id.txt);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            String date = sdf.format(new Date());
-            try {
-                JSONObject theObject = new JSONObject(result);
-                txt.setText("Response is: "+ theObject.getJSONObject(date + " 12:00:00").getJSONObject("temperature").getString("sol"));
-            } catch (Exception e){
-                txt.setText("Error during process");
+
+            ArrayList<HashMap<String, String>> listItem = new ArrayList<HashMap<String, String>>();
+            HashMap<String, String> map;
+            for (int i = 0; i < cities.size(); i++) {
+                map = new HashMap<String, String>();
+                String result = results.get(i);
+                //TextView txt = (TextView) findViewById(R.id.txt);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String date = sdf.format(new Date());
+                map.put("name", cities.get(i).getName());
+                try {
+                    JSONObject theObject = new JSONObject(result);
+                    map.put("temp", theObject.getJSONObject(date + " 12:00:00").getJSONObject("temperature").getString("sol"));
+                } catch (Exception e) {
+                    map.put("temp", "Error during process");
+                }
+                listItem.add(map);
             }
-            super.onPostExecute(result);
+            SimpleAdapter mSchedule = new SimpleAdapter (MainActivity.this.getBaseContext(), listItem,
+                    R.layout.activity_main,
+                    new String[] {"name", "temp"}, new int[] {R.id.name, R.id.txt});
+            MainActivity.this.setListAdapter(mSchedule);
+            super.onPostExecute(results);
         }
         @Override
         protected void onPreExecute() {
