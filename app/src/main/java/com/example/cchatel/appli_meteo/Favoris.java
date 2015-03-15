@@ -1,8 +1,11 @@
 package com.example.cchatel.appli_meteo;
 
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,6 +21,7 @@ import org.apache.http.NameValuePair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class Favoris extends ListActivity {
@@ -74,6 +78,40 @@ public class Favoris extends ListActivity {
             Intent favIntent = new Intent(this, Favoris.class);
             startActivity(favIntent);
         }
+        else if (id == R.id.location){
+            Log.i("MENU", "Clic sur location");
+            double[] location = getGPS();
+
+            Intent cityIntent = new Intent(this, MeteoVille.class);
+            String latitude = String.valueOf(location[0]);
+            String longitude = String.valueOf(location[1]);
+            cityIntent.putExtra("latitude",latitude);
+            cityIntent.putExtra("longitude",longitude);
+            cityIntent.putExtra("location", "true");
+            Log.i("LOCATION", latitude);
+            Log.i("LOCATION", longitude);
+            startActivity(cityIntent);
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private double[] getGPS() {
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        List<String> providers = lm.getProviders(true);
+
+/* Loop over the array backwards, and if you get an accurate location, then break                 out the loop*/
+        Location l = null;
+
+        for (int i=providers.size()-1; i>=0; i--) {
+            l = lm.getLastKnownLocation(providers.get(i));
+            if (l != null) break;
+        }
+
+        double[] gps = new double[2];
+        if (l != null) {
+            gps[0] = l.getLatitude();
+            gps[1] = l.getLongitude();
+        }
+        return gps;
     }
 }

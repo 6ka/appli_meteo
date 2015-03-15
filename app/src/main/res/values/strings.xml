@@ -9,5 +9,6 @@
     <string name="title_activity_search_city">SearchCity</string>
     <string name="home">Home</string>
     <string name="fav">Favorites</string>
+    <string name="location">My Location</string>
 
 </resources>

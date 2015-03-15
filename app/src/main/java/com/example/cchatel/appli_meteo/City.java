@@ -42,6 +42,11 @@ public class City implements Serializable{
         this.latitude = latitude;
     }
 
+    public City(String longitude, String latitude) {
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
+
     public String getName() {
         return name;
     }

@@ -9,4 +9,17 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Sorry, you have no favorite cities."
         android:id="@+id/textView" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add favorite city"
+        android:id="@+id/button3"
+        android:layout_gravity="center_horizontal" />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@android:id/list"
+        android:layout_gravity="center_horizontal" />
 </LinearLayout>

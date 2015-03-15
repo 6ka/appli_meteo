@@ -2,7 +2,10 @@ package com.example.cchatel.appli_meteo;
 
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
@@ -12,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -82,6 +86,20 @@ public class MainActivity extends ListActivity {
             Intent favIntent = new Intent(this, Favoris.class);
             startActivity(favIntent);
         }
+        else if (id == R.id.location){
+            Log.i("MENU", "Clic sur location");
+            double[] location = getGPS();
+
+            Intent cityIntent = new Intent(this, MeteoVille.class);
+            String latitude = String.valueOf(location[0]);
+            String longitude = String.valueOf(location[1]);
+            cityIntent.putExtra("latitude",latitude);
+            cityIntent.putExtra("longitude",longitude);
+            cityIntent.putExtra("location", "true");
+            Log.i("LOCATION", latitude);
+            Log.i("LOCATION", longitude);
+            startActivity(cityIntent);
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -93,6 +111,26 @@ public class MainActivity extends ListActivity {
             monIntent.putExtra(currentKey, map.get(currentKey));
         }
         startActivity(monIntent);
+    }
+
+    private double[] getGPS() {
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        List<String> providers = lm.getProviders(true);
+
+/* Loop over the array backwards, and if you get an accurate location, then break                 out the loop*/
+        Location l = null;
+
+        for (int i=providers.size()-1; i>=0; i--) {
+            l = lm.getLastKnownLocation(providers.get(i));
+            if (l != null) break;
+        }
+
+        double[] gps = new double[2];
+        if (l != null) {
+            gps[0] = l.getLatitude();
+            gps[1] = l.getLongitude();
+        }
+        return gps;
     }
 
     private class WebServiceRequestor extends AsyncTask<String, Void, ArrayList<String>> {
@@ -117,8 +155,15 @@ public class MainActivity extends ListActivity {
         @Override
         protected ArrayList<String> doInBackground(String... params)
         {
-            if (cities.size() == 0){
+            if (cities.size() == 0) {
                 setContentView(R.layout.activity_no_fav);
+                Button buttonAdd = (Button) findViewById(R.id.button3);
+                buttonAdd.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        Intent monIntent = new Intent(MainActivity.this, SearchCity.class);
+                        startActivity(monIntent);
+                    }
+                });
             }
             else {
                 ArrayList<String> returns = new ArrayList<>();
