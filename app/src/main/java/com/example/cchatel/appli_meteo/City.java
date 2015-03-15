@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class City implements Serializable{
-    private static final long serialVersionUID = -7;
     private int id;
     private String name;
     private String longitude;

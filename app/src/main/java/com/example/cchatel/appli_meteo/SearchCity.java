@@ -1,5 +1,6 @@
 package com.example.cchatel.appli_meteo;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class SearchCity extends ActionBarActivity {
+public class SearchCity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,20 +62,22 @@ public class SearchCity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_search_city, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()){
+            case R.id.home:
+                Log.i("MENU", "Clic sur home");
+                Intent homeIntent = new Intent(this, MainActivity.class);
+                homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(homeIntent);
+            case R.id.fav:
+                Log.i("MENU", "Clic sur favoris");
+                Intent favIntent = new Intent(this, Favoris.class);
+                startActivity(favIntent);
         }
 
         return super.onOptionsItemSelected(item);
