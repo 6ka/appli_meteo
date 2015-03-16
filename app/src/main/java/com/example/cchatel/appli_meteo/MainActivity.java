@@ -8,7 +8,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.StrictMode;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,30 +17,23 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class MainActivity extends ListActivity {
@@ -201,7 +193,6 @@ public class MainActivity extends ListActivity {
             for (int i = 0; i < cities.size(); i++) {
                 map = new HashMap<String, String>();
                 String result = results.get(i);
-                //TextView txt = (TextView) findViewById(R.id.txt);
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 City currentCity = cities.get(i);
                 map.put("name", currentCity.getName());
@@ -209,7 +200,8 @@ public class MainActivity extends ListActivity {
                 map.put("latitude", currentCity.getLatitude());
 
                 String date_today = sdf.format(new Date());
-                Calendar c = Calendar.getInstance();
+                //Calendar c = Calendar.getInstance();
+                GregorianCalendar c = new java.util.GregorianCalendar();
                 Date dt = new Date();
                 c.setTime(dt);
                 c.add(Calendar.DATE, 1);
@@ -229,9 +221,9 @@ public class MainActivity extends ListActivity {
                     for (int j = 0; j < dates.size(); j++) {
                         String current_date = dates.get(j);
                         map.put("date"+Integer.toString(j), dates.get(j));
-                        map.put("temp"+Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol"));
-                        map.put("pluie"+Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getString("pluie"));
-                        map.put("vent"+Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m"));
+                        map.put("temp"+Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol") + "°C");
+                        map.put("pluie"+Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getString("pluie") + "mm");
+                        map.put("vent"+Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m") + "km/h");
                     }
 
                 } catch (Exception e) {
@@ -241,7 +233,7 @@ public class MainActivity extends ListActivity {
             }
             SimpleAdapter mSchedule = new SimpleAdapter (MainActivity.this.getBaseContext(), listItem,
                     R.layout.activity_main,
-                    new String[] {"name", "temp0"}, new int[] {R.id.name, R.id.txt});
+                    new String[] {"name", "temp0"}, new int[] {R.id.date, R.id.txt});
             MainActivity.this.setListAdapter(mSchedule);
             super.onPostExecute(results);
         }

@@ -7,14 +7,10 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
@@ -27,7 +23,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,7 +46,7 @@ public class MeteoVille extends ListActivity {
                 values.put(key, extras.getString(key));
             }
             if (!values.containsKey("location")) {
-                TextView name = (TextView) findViewById(R.id.name);
+                TextView name = (TextView) findViewById(R.id.date);
                 name.setText(values.get("name"));
                 ArrayList<HashMap<String, String>> listItem = new ArrayList<HashMap<String, String>>();
                 for (int i = 0; i < 3; i++) {
@@ -71,7 +66,7 @@ public class MeteoVille extends ListActivity {
                 setListAdapter(mSchedule);
             } else {
                 Log.i("ONCREATE", "Récupère la météo de la position");
-                TextView name = (TextView) findViewById(R.id.name);
+                TextView name = (TextView) findViewById(R.id.date);
                 name.setText("Your Location");
                 City city = new City(values.get("longitude"), values.get("latitude"));
                 ArrayList<City> cities = new ArrayList<>();
