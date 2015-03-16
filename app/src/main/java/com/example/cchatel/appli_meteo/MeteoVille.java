@@ -23,6 +23,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -67,7 +69,12 @@ public class MeteoVille extends ListActivity {
             } else {
                 Log.i("ONCREATE", "Récupère la météo de la position");
                 TextView name = (TextView) findViewById(R.id.date);
-                name.setText("Your Location");
+                if (values.containsKey("name")){
+                    name.setText(values.get("name"));
+                }
+                else {
+                    name.setText("Your Location");
+                }
                 City city = new City(values.get("longitude"), values.get("latitude"));
                 ArrayList<City> cities = new ArrayList<>();
                 cities.add(city);
@@ -136,6 +143,13 @@ public class MeteoVille extends ListActivity {
         return gps;
     }
 
+    private String toCelsius(String kelvin){
+        double kelvinNb = Double.parseDouble(kelvin);
+        NumberFormat nf = new DecimalFormat("0");
+        String celsius = nf.format(kelvinNb - 273.15);
+        return celsius;
+    }
+
     private class WebServiceRequestor extends AsyncTask<String, Void, ArrayList<String>> {
         private ProgressDialog pDialog;
         ArrayList<City> cities;
@@ -190,12 +204,11 @@ public class MeteoVille extends ListActivity {
             for (int i = 0; i < cities.size(); i++) {
                 map = new HashMap<String, String>();
                 String result = results.get(i);
-                //TextView txt = (TextView) findViewById(R.id.txt);
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 City currentCity = cities.get(i);
-                map.put("name", currentCity.getName());
-                map.put("longitude", currentCity.getLongitude());
-                map.put("latitude", currentCity.getLatitude());
+                //map.put("name", currentCity.getName());
+                //map.put("longitude", currentCity.getLongitude());
+                //map.put("latitude", currentCity.getLatitude());
                 Log.i("POSTEXECUTE", currentCity.getLongitude());
 
                 String date_today = sdf.format(new Date());
@@ -218,10 +231,12 @@ public class MeteoVille extends ListActivity {
                     JSONObject theObject = new JSONObject(result);
                     for (int j = 0; j < dates.size(); j++) {
                         String current_date = dates.get(j);
+                        map = new HashMap<String, String>();
+                        Log.i("DATE", current_date.toString());
                         map.put("date", dates.get(j));
-                        map.put("temp", theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol"));
-                        map.put("pluie", theObject.getJSONObject(current_date + " 15:00:00").getString("pluie"));
-                        map.put("vent", theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m"));
+                        map.put("temp", toCelsius(theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol")) + "°C");
+                        map.put("pluie", theObject.getJSONObject(current_date + " 15:00:00").getString("pluie") + "mm");
+                        map.put("vent", theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m") + "km/h");
                         listItem.add(map);
                     }
 

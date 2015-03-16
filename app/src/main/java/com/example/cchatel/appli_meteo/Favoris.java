@@ -33,23 +33,27 @@ public class Favoris extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favoris);
-        ListView myListView = (ListView) findViewById(R.id.list);
+        final ListView myListView = (ListView) findViewById(R.id.list);
         CityDAO dao = new CityDAO(this);
         dao.open();
         ArrayList<City> cities = dao.getAllCities();
         dao.close();
         //ArrayList<String> cityNames = new ArrayList<>();
-        FavorisAdapter adapter = new FavorisAdapter(this, cities, this);
+        final FavorisAdapter adapter = new FavorisAdapter(this, cities, this);
         myListView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        FavorisAdapter moduleData = new FavorisAdapter(this, cities, this);
         ListView listView1 = (ListView)findViewById(R.id.list);
-        listView1.setAdapter(moduleData);
+        listView1.setAdapter(adapter);
         listView1.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.v("Module Item Trigger", "Module item was triggered");
-                Toast.makeText(getApplicationContext(), "hello", Toast.LENGTH_SHORT).show();
+                City city = adapter.getItem(position);
+                Intent intentMeteo = new Intent(Favoris.this, MeteoVille.class);
+                intentMeteo.putExtra("latitude", city.getLatitude());
+                intentMeteo.putExtra("longitude", city.getLongitude());
+                intentMeteo.putExtra("location", true);
+                intentMeteo.putExtra("name", city.getName());
+                startActivity(intentMeteo);
             }
         });
 

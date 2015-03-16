@@ -62,9 +62,9 @@ public class FavorisAdapter extends BaseAdapter {
         holder.indexCity = city.getId();
 
         Button buttonDelete = (Button) convertView.findViewById(R.id.button);
+        buttonDelete.setFocusable(false);
         buttonDelete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                int position = mListView.getPositionForView((View) v.getParent());
                 CityDAO dao = new CityDAO(context);
                 dao.open();
                 dao.delete(holder.indexCity);

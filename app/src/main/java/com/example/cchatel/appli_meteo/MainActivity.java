@@ -27,6 +27,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -125,6 +127,13 @@ public class MainActivity extends ListActivity {
         return gps;
     }
 
+    private String toCelsius(String kelvin){
+        double kelvinNb = Double.parseDouble(kelvin);
+        NumberFormat nf = new DecimalFormat("0");
+        String celsius = nf.format(kelvinNb - 273.15);
+        return celsius;
+    }
+
     private class WebServiceRequestor extends AsyncTask<String, Void, ArrayList<String>> {
         private ProgressDialog pDialog;
         ArrayList<City> cities;
@@ -221,7 +230,7 @@ public class MainActivity extends ListActivity {
                     for (int j = 0; j < dates.size(); j++) {
                         String current_date = dates.get(j);
                         map.put("date"+Integer.toString(j), dates.get(j));
-                        map.put("temp"+Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol") + "°C");
+                        map.put("temp"+Integer.toString(j), toCelsius(theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol")) + "°C");
                         map.put("pluie"+Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getString("pluie") + "mm");
                         map.put("vent"+Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m") + "km/h");
                     }
