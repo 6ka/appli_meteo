@@ -39,17 +39,25 @@ public class Favoris extends Activity {
         ArrayList<City> cities = dao.getAllCities();
         dao.close();
         //ArrayList<String> cityNames = new ArrayList<>();
-        FavorisAdapter adapter = new FavorisAdapter(this, cities);
+        FavorisAdapter adapter = new FavorisAdapter(this, cities, this);
         myListView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        FavorisAdapter moduleData = new FavorisAdapter(this, cities);
+        FavorisAdapter moduleData = new FavorisAdapter(this, cities, this);
         ListView listView1 = (ListView)findViewById(R.id.list);
         listView1.setAdapter(moduleData);
         listView1.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.v("Module Item Trigger", "Module item was triggered");
                 Toast.makeText(getApplicationContext(), "hello", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Button buttonAdd = (Button) findViewById(R.id.button2);
+        buttonAdd.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent monIntent = new Intent(Favoris.this, SearchCity.class);
+                startActivity(monIntent);
             }
         });
     }

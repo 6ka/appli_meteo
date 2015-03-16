@@ -1,18 +1,23 @@
 package com.example.cchatel.appli_meteo;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 public class FavorisAdapter extends BaseAdapter {
     private ArrayList<City> cities;
+    private ListView mListView;
+    private Context context;
     LayoutInflater inflater;
 
     /**
@@ -24,11 +29,14 @@ public class FavorisAdapter extends BaseAdapter {
     private class ViewHolder {
         TextView name;
         Button delete;
+        int indexCity;
     }
 
-    public FavorisAdapter(Context context, ArrayList<City> objects) {
+    public FavorisAdapter(Context context, ArrayList<City> objects, Activity activity) {
         inflater = LayoutInflater.from(context);
         this.cities = objects;
+        this.mListView = (ListView) activity.findViewById(R.id.list);
+        this.context = context;
     }
 
     /**
@@ -36,7 +44,7 @@ public class FavorisAdapter extends BaseAdapter {
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+        final ViewHolder holder;
         if (convertView == null) {
             Log.v("test", "convertView is null");
             holder = new ViewHolder();
@@ -51,6 +59,20 @@ public class FavorisAdapter extends BaseAdapter {
         City city = cities.get(position);
         holder.name.setText(city.getName());
         holder.delete.setText("Delete");
+        holder.indexCity = city.getId();
+
+        Button buttonDelete = (Button) convertView.findViewById(R.id.button);
+        buttonDelete.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                int position = mListView.getPositionForView((View) v.getParent());
+                CityDAO dao = new CityDAO(context);
+                dao.open();
+                dao.delete(holder.indexCity);
+                dao.close();
+                Intent intent = new Intent(context, Favoris.class);
+                context.startActivity(intent);
+            }
+        });
         return convertView;
     }
 
