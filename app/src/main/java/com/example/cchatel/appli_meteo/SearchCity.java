@@ -151,6 +151,8 @@ public class SearchCity extends Activity {
                 dao.open();
                 dao.add(city);
                 dao.close();
+                Intent intent = new Intent(SearchCity.this, Favoris.class);
+                startActivity(intent);
             } catch (Exception e){
                 Log.i("ONPOST", e.getMessage());
             }
