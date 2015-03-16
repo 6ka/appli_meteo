@@ -1,5 +1,6 @@
 package com.example.cchatel.appli_meteo;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,11 +12,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 
@@ -24,34 +27,29 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class Favoris extends ListActivity {
+public class Favoris extends Activity {
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favoris);
+        ListView myListView = (ListView) findViewById(R.id.list);
         CityDAO dao = new CityDAO(this);
         dao.open();
         ArrayList<City> cities = dao.getAllCities();
         dao.close();
         //ArrayList<String> cityNames = new ArrayList<>();
-        ArrayList<HashMap<String, String>> listItem = new ArrayList<>();
-        for (City city : cities){
-            HashMap<String, String> cityNames = new HashMap<>();
-            cityNames.put("name", city.getName());
-            cityNames.put("button", "Delete");
-            listItem.add(cityNames);
-        }
-        SimpleAdapter mSchedule = new SimpleAdapter (this.getBaseContext(), listItem,
-                R.layout.activity_favoris_sublist, new String[] {"name", "button"},
-                new int[] {R.id.name, R.id.button});
-        setListAdapter(mSchedule);
+        FavorisAdapter adapter = new FavorisAdapter(this, cities);
+        myListView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
 
-        Button buttonAdd = (Button) findViewById(R.id.button2);
-        buttonAdd.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent monIntent = new Intent(Favoris.this, SearchCity.class);
-                startActivity(monIntent);
+        FavorisAdapter moduleData = new FavorisAdapter(this, cities);
+        ListView listView1 = (ListView)findViewById(R.id.list);
+        listView1.setAdapter(moduleData);
+        listView1.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.v("Module Item Trigger", "Module item was triggered");
+                Toast.makeText(getApplicationContext(), "hello", Toast.LENGTH_SHORT).show();
             }
         });
     }

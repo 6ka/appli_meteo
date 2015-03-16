@@ -70,6 +70,7 @@ public class MeteoVille extends ListActivity {
                         R.id.temp, R.id.vent});
                 setListAdapter(mSchedule);
             } else {
+                Log.i("ONCREATE", "Récupère la météo de la position");
                 TextView name = (TextView) findViewById(R.id.name);
                 name.setText("Your Location");
                 City city = new City(values.get("longitude"), values.get("latitude"));
