@@ -23,16 +23,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MeteoVille"
+            android:name=".CityMeteoActivity"
             android:label="Meteo" >
 
         </activity>
         <activity
-            android:name=".Favoris"
+            android:name=".FavoriteActivity"
             android:label="Favorite cities" >
         </activity>
         <activity
-            android:name=".SearchCity"
+            android:name=".SearchCityActivity"
             android:label="Add a favorite city" >
         </activity>
     </application>

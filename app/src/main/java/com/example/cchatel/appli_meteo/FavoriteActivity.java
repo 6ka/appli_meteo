@@ -1,10 +1,8 @@
 package com.example.cchatel.appli_meteo;
 
 import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -14,20 +12,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import org.apache.http.NameValuePair;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
-public class Favoris extends Activity {
+public class FavoriteActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +30,7 @@ public class Favoris extends Activity {
         ArrayList<City> cities = dao.getAllCities();
         dao.close();
         //ArrayList<String> cityNames = new ArrayList<>();
-        final FavorisAdapter adapter = new FavorisAdapter(this, cities, this);
+        final FavoriteAdapter adapter = new FavoriteAdapter(this, cities, this);
         myListView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
@@ -48,7 +39,7 @@ public class Favoris extends Activity {
         listView1.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 City city = adapter.getItem(position);
-                Intent intentMeteo = new Intent(Favoris.this, MeteoVille.class);
+                Intent intentMeteo = new Intent(FavoriteActivity.this, CityMeteoActivity.class);
                 intentMeteo.putExtra("latitude", city.getLatitude());
                 intentMeteo.putExtra("longitude", city.getLongitude());
                 intentMeteo.putExtra("location", "true");
@@ -60,7 +51,7 @@ public class Favoris extends Activity {
         Button buttonAdd = (Button) findViewById(R.id.button2);
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent monIntent = new Intent(Favoris.this, SearchCity.class);
+                Intent monIntent = new Intent(FavoriteActivity.this, SearchCityActivity.class);
                 startActivity(monIntent);
             }
         });
@@ -85,14 +76,14 @@ public class Favoris extends Activity {
         }
         else if (id == R.id.fav) {
             Log.i("MENU", "Clic sur favoris");
-            Intent favIntent = new Intent(this, Favoris.class);
+            Intent favIntent = new Intent(this, FavoriteActivity.class);
             startActivity(favIntent);
         }
         else if (id == R.id.location){
             Log.i("MENU", "Clic sur location");
             double[] location = getGPS();
 
-            Intent cityIntent = new Intent(this, MeteoVille.class);
+            Intent cityIntent = new Intent(this, CityMeteoActivity.class);
             String latitude = String.valueOf(location[0]);
             String longitude = String.valueOf(location[1]);
             cityIntent.putExtra("latitude",latitude);

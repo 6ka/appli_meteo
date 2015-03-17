@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 
-public class MeteoVille extends ListActivity {
+public class CityMeteoActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,13 +101,13 @@ public class MeteoVille extends ListActivity {
             startActivity(homeIntent);
         } else if (id == R.id.fav) {
             Log.i("MENU", "Clic sur favoris");
-            Intent favIntent = new Intent(this, Favoris.class);
+            Intent favIntent = new Intent(this, FavoriteActivity.class);
             startActivity(favIntent);
         } else if (id == R.id.location) {
             Log.i("MENU", "Clic sur location");
             double[] location = getGPS();
 
-            Intent cityIntent = new Intent(this, MeteoVille.class);
+            Intent cityIntent = new Intent(this, CityMeteoActivity.class);
             String latitude = String.valueOf(location[0]);
             String longitude = String.valueOf(location[1]);
             cityIntent.putExtra("latitude", latitude);
@@ -242,17 +242,17 @@ public class MeteoVille extends ListActivity {
                 listItem.add(map);
             }
 
-            SimpleAdapter mSchedule = new SimpleAdapter(MeteoVille.this.getBaseContext(), listItem,
+            SimpleAdapter mSchedule = new SimpleAdapter(CityMeteoActivity.this.getBaseContext(), listItem,
                     R.layout.activity_meteo_ville,
                     new String[]{"date", "pluie", "temp", "vent"}, new int[]{R.id.name, R.id.pluie,
                     R.id.temp, R.id.vent});
-            MeteoVille.this.setListAdapter(mSchedule);
+            CityMeteoActivity.this.setListAdapter(mSchedule);
             super.onPostExecute(results);
         }
 
         @Override
         protected void onPreExecute() {
-            pDialog = new ProgressDialog(MeteoVille.this);
+            pDialog = new ProgressDialog(CityMeteoActivity.this);
             pDialog.setMessage("Processing Request...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);

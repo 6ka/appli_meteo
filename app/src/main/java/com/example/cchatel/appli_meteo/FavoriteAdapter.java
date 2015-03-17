@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class FavorisAdapter extends BaseAdapter {
+public class FavoriteAdapter extends BaseAdapter {
     private ArrayList<City> cities;
     private ListView mListView;
     private Context context;
@@ -32,7 +32,7 @@ public class FavorisAdapter extends BaseAdapter {
         int indexCity;
     }
 
-    public FavorisAdapter(Context context, ArrayList<City> objects, Activity activity) {
+    public FavoriteAdapter(Context context, ArrayList<City> objects, Activity activity) {
         inflater = LayoutInflater.from(context);
         this.cities = objects;
         this.mListView = (ListView) activity.findViewById(R.id.list);
@@ -69,7 +69,7 @@ public class FavorisAdapter extends BaseAdapter {
                 dao.open();
                 dao.delete(holder.indexCity);
                 dao.close();
-                Intent intent = new Intent(context, Favoris.class);
+                Intent intent = new Intent(context, FavoriteActivity.class);
                 context.startActivity(intent);
             }
         });

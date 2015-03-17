@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
@@ -27,11 +26,10 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
-public class SearchCity extends Activity {
+public class SearchCityActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +52,7 @@ public class SearchCity extends Activity {
         btnFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(SearchCity.this, Favoris.class);
+                Intent myIntent = new Intent(SearchCityActivity.this, FavoriteActivity.class);
                 startActivity(myIntent);
             }
         });
@@ -79,14 +77,14 @@ public class SearchCity extends Activity {
         }
         else if (id == R.id.fav) {
             Log.i("MENU", "Clic sur favoris");
-            Intent favIntent = new Intent(this, Favoris.class);
+            Intent favIntent = new Intent(this, FavoriteActivity.class);
             startActivity(favIntent);
         }
         else if (id == R.id.location){
             Log.i("MENU", "Clic sur location");
             double[] location = getGPS();
 
-            Intent cityIntent = new Intent(this, MeteoVille.class);
+            Intent cityIntent = new Intent(this, CityMeteoActivity.class);
             String latitude = String.valueOf(location[0]);
             String longitude = String.valueOf(location[1]);
             cityIntent.putExtra("latitude",latitude);
@@ -147,11 +145,11 @@ public class SearchCity extends Activity {
                 Log.i("LONGITUDE", longitude);
                 Log.i("NOM", name);
                 City city = new City(name, longitude, latitude);
-                CityDAO dao = new CityDAO(SearchCity.this);
+                CityDAO dao = new CityDAO(SearchCityActivity.this);
                 dao.open();
                 dao.add(city);
                 dao.close();
-                Intent intent = new Intent(SearchCity.this, Favoris.class);
+                Intent intent = new Intent(SearchCityActivity.this, FavoriteActivity.class);
                 startActivity(intent);
             } catch (Exception e){
                 Log.i("ONPOST", e.getMessage());
@@ -163,7 +161,7 @@ public class SearchCity extends Activity {
         @Override
         protected void onPreExecute() {
             Log.d("PONEY", "PreExecute");
-            pDialog = new ProgressDialog(SearchCity.this);
+            pDialog = new ProgressDialog(SearchCityActivity.this);
             pDialog.setMessage("Processing Request...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
