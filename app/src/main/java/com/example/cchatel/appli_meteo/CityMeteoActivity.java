@@ -223,16 +223,21 @@ public class CityMeteoActivity extends ListActivity {
             try {
                 JSONObject theObject = new JSONObject(result);
                 for (int j = 0; j < dates.size(); j++) {
-                    String current_date = dates.get(j);
                     map = new HashMap<String, String>();
-                    Log.i("DATE", current_date.toString());
-                    map.put("date", dates.get(j));
-                    map.put("temp", toCelsius(theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol")) + "°C");
-                    Log.i("TEMP", map.get("temp"));
-                    map.put("pluie", theObject.getJSONObject(current_date + " 15:00:00").getString("pluie") + "mm");
-                    Log.i("PLUIE", map.get("pluie"));
-                    map.put("vent", theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m") + "km/h");
-                    Log.i("VENT", map.get("vent"));
+                    String current_date = dates.get(j);
+                    map.put("date", current_date);
+                    String pluie = theObject.getJSONObject(current_date + " 15:00:00").getString("pluie");
+                    String temp = toCelsius(theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol"));
+                    String vent = theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m");
+                    map.put("temp", temp + "°C");
+                    map.put("pluie", pluie + "mm");
+                    map.put("vent", vent + "km/h");
+                    if (Double.parseDouble(pluie) > 0.2)
+                        map.put("img", Integer.toString(R.drawable.pluie_petit));
+                    else if (Double.parseDouble(vent) > 20)
+                        map.put("img", Integer.toString(R.drawable.vent_petit));
+                    else
+                        map.put("img", Integer.toString(R.drawable.soleil_petit));
                     listItem.add(map);
                 }
 
@@ -245,8 +250,8 @@ public class CityMeteoActivity extends ListActivity {
 
             SimpleAdapter mSchedule = new SimpleAdapter(CityMeteoActivity.this.getBaseContext(), listItem,
                     R.layout.activity_meteo_ville,
-                    new String[]{"date", "pluie", "temp", "vent"}, new int[]{R.id.name, R.id.pluie,
-                    R.id.temp, R.id.vent});
+                    new String[]{"date", "pluie", "temp", "vent", "img"}, new int[]{R.id.date, R.id.pluie,
+                    R.id.temp, R.id.vent, R.id.imageView});
             CityMeteoActivity.this.setListAdapter(mSchedule);
             super.onPostExecute(results);
         }
