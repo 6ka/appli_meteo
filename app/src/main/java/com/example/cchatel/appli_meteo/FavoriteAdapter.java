@@ -22,12 +22,6 @@ public class FavoriteAdapter extends BaseAdapter {
     private Context context;
     LayoutInflater inflater;
 
-    /**
-     * Elle nous serviraà mémoriser les éléments de la liste en mémoirepour
-     * qu’à chaque rafraichissementl’écran ne scintillepas
-     *
-     * @author patrice
-     */
     private class ViewHolder {
         TextView name;
         Button delete;
@@ -41,21 +35,16 @@ public class FavoriteAdapter extends BaseAdapter {
         this.context = context;
     }
 
-    /**
-     * Génère la vuepour un objet
-     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
         if (convertView == null) {
-            Log.v("test", "convertView is null");
             holder = new ViewHolder();
             convertView = inflater.inflate(R.layout.activity_favoris_sublist, null);
             holder.name = (TextView) convertView.findViewById(R.id.name);
             holder.delete = (Button) convertView.findViewById(R.id.button);
             convertView.setTag(holder);
         } else {
-            Log.v("test", "convertView is not null");
             holder = (ViewHolder) convertView.getTag();
         }
         City city = cities.get(position);
@@ -96,7 +85,6 @@ public class FavoriteAdapter extends BaseAdapter {
      */
     @Override
     public int getCount() {
-// TODOAuto-generated method stub
         return cities.size();
     }
 
@@ -105,7 +93,6 @@ public class FavoriteAdapter extends BaseAdapter {
      */
     @Override
     public City getItem(int position) {
-// TODOAuto-generated method stub
         return cities.get(position);
     }
 
@@ -114,7 +101,6 @@ public class FavoriteAdapter extends BaseAdapter {
      */
     @Override
     public long getItemId(int position) {
-// TODOAuto-generated method stub
         return position;
     }
 }

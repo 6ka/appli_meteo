@@ -48,7 +48,7 @@ public class MainActivity extends ListActivity {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        List<NameValuePair> params = new ArrayList<>();
         CityDAO dao = new CityDAO(this);
         dao.open();
         ArrayList<City> cities = dao.getAllCities();
@@ -59,8 +59,6 @@ public class MainActivity extends ListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        Log.i("MENU", "Création menu");
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
         return true;
@@ -70,18 +68,15 @@ public class MainActivity extends ListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.home) {
-            Log.i("MENU", "Clic sur home");
             Intent homeIntent = new Intent(this, MainActivity.class);
             homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(homeIntent);
         }
         else if (id == R.id.fav) {
-            Log.i("MENU", "Clic sur favoris");
             Intent favIntent = new Intent(this, FavoriteActivity.class);
             startActivity(favIntent);
         }
         else if (id == R.id.location){
-            Log.i("MENU", "Clic sur location");
             double[] location = getGPS();
 
             Intent cityIntent = new Intent(this, CityMeteoActivity.class);
@@ -90,8 +85,6 @@ public class MainActivity extends ListActivity {
             cityIntent.putExtra("latitude",latitude);
             cityIntent.putExtra("longitude",longitude);
             cityIntent.putExtra("location", "true");
-            Log.i("LOCATION", latitude);
-            Log.i("LOCATION", longitude);
             startActivity(cityIntent);
         }
         return super.onOptionsItemSelected(item);
@@ -111,7 +104,6 @@ public class MainActivity extends ListActivity {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         List<String> providers = lm.getProviders(true);
 
-/* Loop over the array backwards, and if you get an accurate location, then break                 out the loop*/
         Location l = null;
 
         for (int i=providers.size()-1; i>=0; i--) {
@@ -181,15 +173,13 @@ public class MainActivity extends ListActivity {
                         httpResponse = httpClient.execute(httpPost);
                         httpEntity = httpResponse.getEntity();
                         returns.add(EntityUtils.toString(httpEntity));
-                        //return EntityUtils.toString(httpEntity);
                     } catch (Exception e) {
                     }
-                    Log.i("BACKGROUND", Integer.toString(cities.size()));
-                    Log.i("BACKGROUND", Integer.toString(returns.size()));
+
                 }
                 return returns;
             }
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         @Override
         protected void onPostExecute(ArrayList<String> results)
@@ -209,7 +199,6 @@ public class MainActivity extends ListActivity {
                 map.put("latitude", currentCity.getLatitude());
 
                 String date_today = sdf.format(new Date());
-                //Calendar c = Calendar.getInstance();
                 GregorianCalendar c = new java.util.GregorianCalendar();
                 Date dt = new Date();
                 c.setTime(dt);

@@ -43,7 +43,7 @@ public class SearchCityActivity extends Activity {
                 EditText editText = (EditText) findViewById(R.id.editText);
                 Editable cityTxt = editText.getText();
                 String cityString = cityTxt.toString();
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
                 new WebServiceRequestor("https://maps.googleapis.com/maps/api/geocode/json?address="+cityString, params).execute();
             }
         });
@@ -61,7 +61,6 @@ public class SearchCityActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -70,18 +69,15 @@ public class SearchCityActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.home) {
-            Log.i("MENU", "Clic sur home");
             Intent homeIntent = new Intent(this, MainActivity.class);
             homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(homeIntent);
         }
         else if (id == R.id.fav) {
-            Log.i("MENU", "Clic sur favoris");
             Intent favIntent = new Intent(this, FavoriteActivity.class);
             startActivity(favIntent);
         }
         else if (id == R.id.location){
-            Log.i("MENU", "Clic sur location");
             double[] location = getGPS();
 
             Intent cityIntent = new Intent(this, CityMeteoActivity.class);
@@ -90,8 +86,6 @@ public class SearchCityActivity extends Activity {
             cityIntent.putExtra("latitude",latitude);
             cityIntent.putExtra("longitude",longitude);
             cityIntent.putExtra("location", "true");
-            Log.i("LOCATION", latitude);
-            Log.i("LOCATION", longitude);
             startActivity(cityIntent);
         }
         return super.onOptionsItemSelected(item);
@@ -131,19 +125,14 @@ public class SearchCityActivity extends Activity {
         @Override
         protected void onPostExecute(String result)
         {
-            Log.i("ONPOST", "PostExecute");
             pDialog.dismiss();
             try {
-                Log.i("ONPOST", "Avant récupération !");
                 JSONObject theObject = new JSONObject(result);
-                Log.i("ONPOST", "JSON récupéré !");
 
                 JSONObject resultObject = theObject.getJSONArray("results").getJSONObject(0);
                 String name = resultObject.getJSONArray("address_components").getJSONObject(0).getString("long_name");
                 String longitude = resultObject.getJSONObject("geometry").getJSONObject("location").getString("lng");
                 String latitude = resultObject.getJSONObject("geometry").getJSONObject("location").getString("lat");
-                Log.i("LONGITUDE", longitude);
-                Log.i("NOM", name);
                 City city = new City(name, longitude, latitude);
                 CityDAO dao = new CityDAO(SearchCityActivity.this);
                 dao.open();
@@ -155,19 +144,16 @@ public class SearchCityActivity extends Activity {
                 Log.i("ONPOST", e.getMessage());
             }
             super.onPostExecute(result);
-            Log.i("", "FinPostExecute");
         }
 
         @Override
         protected void onPreExecute() {
-            Log.d("PONEY", "PreExecute");
             pDialog = new ProgressDialog(SearchCityActivity.this);
             pDialog.setMessage("Processing Request...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
             pDialog.show();
             super.onPreExecute();
-            Log.i("", "FinPreExecute");
         }
         @Override
         protected void onProgressUpdate(Void... values) {

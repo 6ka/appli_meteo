@@ -14,7 +14,6 @@ public class CityDAO{
         public static final String LONGITUDE = "longitude";
         public static final String LATITUDE = "latitude";
         protected final static int VERSION = 1;
-        // Le nom du fichier qui représente ma base
         protected final static String NOM = "city2.db";
 
         protected SQLiteDatabase mDb = null;
@@ -29,7 +28,6 @@ public class CityDAO{
         }
 
         public SQLiteDatabase open() {
-            // Pas besoin de fermer la dernière base puisque getWritableDatabase s'en charge
             mDb = mHandler.getWritableDatabase();
             return mDb;
         }

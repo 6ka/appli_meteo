@@ -29,7 +29,6 @@ public class FavoriteActivity extends Activity {
         dao.open();
         ArrayList<City> cities = dao.getAllCities();
         dao.close();
-        //ArrayList<String> cityNames = new ArrayList<>();
         final FavoriteAdapter adapter = new FavoriteAdapter(this, cities, this);
         myListView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -60,7 +59,6 @@ public class FavoriteActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -69,18 +67,15 @@ public class FavoriteActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.home) {
-            Log.i("MENU", "Clic sur home");
             Intent homeIntent = new Intent(this, MainActivity.class);
             homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(homeIntent);
         }
         else if (id == R.id.fav) {
-            Log.i("MENU", "Clic sur favoris");
             Intent favIntent = new Intent(this, FavoriteActivity.class);
             startActivity(favIntent);
         }
         else if (id == R.id.location){
-            Log.i("MENU", "Clic sur location");
             double[] location = getGPS();
 
             Intent cityIntent = new Intent(this, CityMeteoActivity.class);
@@ -89,8 +84,6 @@ public class FavoriteActivity extends Activity {
             cityIntent.putExtra("latitude",latitude);
             cityIntent.putExtra("longitude",longitude);
             cityIntent.putExtra("location", "true");
-            Log.i("LATITUDE", latitude);
-            Log.i("LONGITUDE", longitude);
             startActivity(cityIntent);
         }
         return super.onOptionsItemSelected(item);
@@ -100,7 +93,6 @@ public class FavoriteActivity extends Activity {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         List<String> providers = lm.getProviders(true);
 
-/* Loop over the array backwards, and if you get an accurate location, then break                 out the loop*/
         Location l = null;
 
         for (int i=providers.size()-1; i>=0; i--) {

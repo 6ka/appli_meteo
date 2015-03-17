@@ -50,7 +50,7 @@ public class CityMeteoActivity extends ListActivity {
             if (!values.containsKey("location")) {
                 TextView name = (TextView) findViewById(R.id.name);
                 name.setText(values.get("name"));
-                ArrayList<HashMap<String, String>> listItem = new ArrayList<HashMap<String, String>>();
+                ArrayList<HashMap<String, String>> listItem = new ArrayList<>();
                 for (int i = 0; i < 3; i++) {
                     String iString = Integer.toString(i);
                     HashMap<String, String> map = new HashMap<>();
@@ -68,7 +68,6 @@ public class CityMeteoActivity extends ListActivity {
                         R.id.temp, R.id.vent, R.id.imageView});
                 setListAdapter(mSchedule);
             } else {
-                Log.i("ONCREATE", "Récupère la météo de la position");
                 TextView name = (TextView) findViewById(R.id.name);
                 if (values.containsKey("name")) {
                     name.setText(values.get("name"));
@@ -76,18 +75,15 @@ public class CityMeteoActivity extends ListActivity {
                     name.setText("Your Location");
                 }
                 City city = new City(values.get("longitude"), values.get("latitude"));
-                Log.i("LOCATION", city.getLatitude());
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
                 new WebServiceRequestor(city, params).execute();
             }
         }
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -96,16 +92,13 @@ public class CityMeteoActivity extends ListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.home) {
-            Log.i("MENU", "Clic sur home");
             Intent homeIntent = new Intent(this, MainActivity.class);
             homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(homeIntent);
         } else if (id == R.id.fav) {
-            Log.i("MENU", "Clic sur favoris");
             Intent favIntent = new Intent(this, FavoriteActivity.class);
             startActivity(favIntent);
         } else if (id == R.id.location) {
-            Log.i("MENU", "Clic sur location");
             double[] location = getGPS();
 
             Intent cityIntent = new Intent(this, CityMeteoActivity.class);
@@ -114,8 +107,6 @@ public class CityMeteoActivity extends ListActivity {
             cityIntent.putExtra("latitude", latitude);
             cityIntent.putExtra("longitude", longitude);
             cityIntent.putExtra("location", "true");
-            Log.i("LOCATION", latitude);
-            Log.i("LOCATION", longitude);
             startActivity(cityIntent);
         }
         return super.onOptionsItemSelected(item);
@@ -124,8 +115,6 @@ public class CityMeteoActivity extends ListActivity {
     private double[] getGPS() {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         List<String> providers = lm.getProviders(true);
-
-/* Loop over the array backwards, and if you get an accurate location, then break                 out the loop*/
         Location l = null;
 
         for (int i = providers.size() - 1; i >= 0; i--) {
@@ -182,7 +171,6 @@ public class CityMeteoActivity extends ListActivity {
                 httpResponse = httpClient.execute(httpPost);
                 httpEntity = httpResponse.getEntity();
                 returns = EntityUtils.toString(httpEntity);
-                //return EntityUtils.toString(httpEntity);
             } catch (Exception e) {
             }
             return returns;
@@ -195,14 +183,10 @@ public class CityMeteoActivity extends ListActivity {
 
             ArrayList<HashMap<String, String>> listItem = new ArrayList<>();
             HashMap<String, String> map;
-            map = new HashMap<String, String>();
+            map = new HashMap<>();
             String result = results;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             City currentCity = city;
-            //map.put("name", currentCity.getName());
-            //map.put("longitude", currentCity.getLongitude());
-            //map.put("latitude", currentCity.getLatitude());
-            Log.i("POSTEXECUTE", currentCity.getLongitude());
 
             String date_today = sdf.format(new Date());
             Calendar c = Calendar.getInstance();
@@ -223,7 +207,7 @@ public class CityMeteoActivity extends ListActivity {
             try {
                 JSONObject theObject = new JSONObject(result);
                 for (int j = 0; j < dates.size(); j++) {
-                    map = new HashMap<String, String>();
+                    map = new HashMap<>();
                     String current_date = dates.get(j);
                     map.put("date", current_date);
                     String pluie = theObject.getJSONObject(current_date + " 15:00:00").getString("pluie");
