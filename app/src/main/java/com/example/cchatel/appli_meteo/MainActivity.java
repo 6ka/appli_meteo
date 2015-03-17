@@ -229,10 +229,20 @@ public class MainActivity extends ListActivity {
                     JSONObject theObject = new JSONObject(result);
                     for (int j = 0; j < dates.size(); j++) {
                         String current_date = dates.get(j);
+                        String jString = Integer.toString(i);
                         map.put("date"+Integer.toString(j), dates.get(j));
-                        map.put("temp"+Integer.toString(j), toCelsius(theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol")) + "°C");
-                        map.put("pluie"+Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getString("pluie") + "mm");
-                        map.put("vent"+Integer.toString(j), theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m") + "km/h");
+                        String pluie = theObject.getJSONObject(current_date + " 15:00:00").getString("pluie");
+                        String temp = toCelsius(theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol"));
+                        String vent = theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m");
+                        map.put("temp"+jString, temp + "°C");
+                        map.put("pluie"+jString, pluie + "mm");
+                        map.put("vent"+jString, vent + "km/h");
+                        if (Double.parseDouble(pluie) > 0)
+                            map.put("img"+Integer.toString(j), Integer.toString(R.drawable.pluie_petit));
+                        else if (Double.parseDouble(vent) > 50)
+                            map.put("img"+jString, Integer.toString(R.drawable.vent_petit));
+                        else
+                            map.put("img"+jString, Integer.toString(R.drawable.soleil_petit));
                     }
 
                 } catch (Exception e) {
@@ -242,7 +252,7 @@ public class MainActivity extends ListActivity {
             }
             SimpleAdapter mSchedule = new SimpleAdapter (MainActivity.this.getBaseContext(), listItem,
                     R.layout.activity_main,
-                    new String[] {"name", "temp0"}, new int[] {R.id.name, R.id.txt});
+                    new String[] {"name", "temp0", "img0"}, new int[] {R.id.name, R.id.txt, R.id.image});
             MainActivity.this.setListAdapter(mSchedule);
             super.onPostExecute(results);
         }
