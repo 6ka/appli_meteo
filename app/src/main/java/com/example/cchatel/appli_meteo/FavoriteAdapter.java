@@ -1,7 +1,9 @@
 package com.example.cchatel.appli_meteo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -65,12 +67,25 @@ public class FavoriteAdapter extends BaseAdapter {
         buttonDelete.setFocusable(false);
         buttonDelete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                CityDAO dao = new CityDAO(context);
-                dao.open();
-                dao.delete(holder.indexCity);
-                dao.close();
-                Intent intent = new Intent(context, FavoriteActivity.class);
-                context.startActivity(intent);
+                new AlertDialog.Builder(context)
+                        .setTitle("Delete city")
+                        .setMessage("Are you sure you want to delete this city?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                CityDAO dao = new CityDAO(context);
+                                dao.open();
+                                dao.delete(holder.indexCity);
+                                dao.close();
+                                Intent intent = new Intent(context, FavoriteActivity.class);
+                                context.startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
             }
         });
         return convertView;
