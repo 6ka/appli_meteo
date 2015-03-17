@@ -59,12 +59,13 @@ public class CityMeteoActivity extends ListActivity {
                     map.put("temp", values.get("temp" + iString));
                     map.put("vent", values.get("vent" + iString));
                     map.put("name", values.get("name"));
+                    map.put("img", values.get("img"+ iString));
                     listItem.add(map);
                 }
                 SimpleAdapter mSchedule = new SimpleAdapter(this.getBaseContext(), listItem,
                         R.layout.activity_meteo_ville,
-                        new String[]{"name", "date", "pluie", "temp", "vent"}, new int[]{R.id.title, R.id.name, R.id.pluie,
-                        R.id.temp, R.id.vent});
+                        new String[]{"name", "date", "pluie", "temp", "vent", "img"}, new int[]{R.id.title, R.id.date, R.id.pluie,
+                        R.id.temp, R.id.vent, R.id.imageView});
                 setListAdapter(mSchedule);
             } else {
                 Log.i("ONCREATE", "Récupère la météo de la position");

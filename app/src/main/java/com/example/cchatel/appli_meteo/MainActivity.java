@@ -229,7 +229,7 @@ public class MainActivity extends ListActivity {
                     JSONObject theObject = new JSONObject(result);
                     for (int j = 0; j < dates.size(); j++) {
                         String current_date = dates.get(j);
-                        String jString = Integer.toString(i);
+                        String jString = Integer.toString(j);
                         map.put("date"+Integer.toString(j), dates.get(j));
                         String pluie = theObject.getJSONObject(current_date + " 15:00:00").getString("pluie");
                         String temp = toCelsius(theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol"));
@@ -237,9 +237,9 @@ public class MainActivity extends ListActivity {
                         map.put("temp"+jString, temp + "°C");
                         map.put("pluie"+jString, pluie + "mm");
                         map.put("vent"+jString, vent + "km/h");
-                        if (Double.parseDouble(pluie) > 0)
+                        if (Double.parseDouble(pluie) > 0.2)
                             map.put("img"+Integer.toString(j), Integer.toString(R.drawable.pluie_petit));
-                        else if (Double.parseDouble(vent) > 50)
+                        else if (Double.parseDouble(vent) > 20)
                             map.put("img"+jString, Integer.toString(R.drawable.vent_petit));
                         else
                             map.put("img"+jString, Integer.toString(R.drawable.soleil_petit));
@@ -251,7 +251,7 @@ public class MainActivity extends ListActivity {
                 listItem.add(map);
             }
             SimpleAdapter mSchedule = new SimpleAdapter (MainActivity.this.getBaseContext(), listItem,
-                    R.layout.activity_main,
+                    R.layout.activity_main_sublist,
                     new String[] {"name", "temp0", "img0"}, new int[] {R.id.name, R.id.txt, R.id.image});
             MainActivity.this.setListAdapter(mSchedule);
             super.onPostExecute(results);
