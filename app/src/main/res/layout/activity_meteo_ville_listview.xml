@@ -8,7 +8,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
-        android:id="@+id/date" />
+        android:id="@+id/name" />
 
     <ListView
         android:layout_width="match_parent"

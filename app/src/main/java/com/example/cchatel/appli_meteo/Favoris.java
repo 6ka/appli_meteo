@@ -51,7 +51,7 @@ public class Favoris extends Activity {
                 Intent intentMeteo = new Intent(Favoris.this, MeteoVille.class);
                 intentMeteo.putExtra("latitude", city.getLatitude());
                 intentMeteo.putExtra("longitude", city.getLongitude());
-                intentMeteo.putExtra("location", true);
+                intentMeteo.putExtra("location", "true");
                 intentMeteo.putExtra("name", city.getName());
                 startActivity(intentMeteo);
             }
@@ -98,8 +98,8 @@ public class Favoris extends Activity {
             cityIntent.putExtra("latitude",latitude);
             cityIntent.putExtra("longitude",longitude);
             cityIntent.putExtra("location", "true");
-            Log.i("LOCATION", latitude);
-            Log.i("LOCATION", longitude);
+            Log.i("LATITUDE", latitude);
+            Log.i("LONGITUDE", longitude);
             startActivity(cityIntent);
         }
         return super.onOptionsItemSelected(item);

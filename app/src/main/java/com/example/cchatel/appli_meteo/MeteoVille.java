@@ -48,7 +48,7 @@ public class MeteoVille extends ListActivity {
                 values.put(key, extras.getString(key));
             }
             if (!values.containsKey("location")) {
-                TextView name = (TextView) findViewById(R.id.date);
+                TextView name = (TextView) findViewById(R.id.name);
                 name.setText(values.get("name"));
                 ArrayList<HashMap<String, String>> listItem = new ArrayList<HashMap<String, String>>();
                 for (int i = 0; i < 3; i++) {
@@ -63,23 +63,21 @@ public class MeteoVille extends ListActivity {
                 }
                 SimpleAdapter mSchedule = new SimpleAdapter(this.getBaseContext(), listItem,
                         R.layout.activity_meteo_ville,
-                        new String[]{"name", "date", "pluie", "temp", "vent"}, new int[]{R.id.title, R.id.date, R.id.pluie,
+                        new String[]{"name", "date", "pluie", "temp", "vent"}, new int[]{R.id.title, R.id.name, R.id.pluie,
                         R.id.temp, R.id.vent});
                 setListAdapter(mSchedule);
             } else {
                 Log.i("ONCREATE", "Récupère la météo de la position");
-                TextView name = (TextView) findViewById(R.id.date);
-                if (values.containsKey("name")){
+                TextView name = (TextView) findViewById(R.id.name);
+                if (values.containsKey("name")) {
                     name.setText(values.get("name"));
-                }
-                else {
+                } else {
                     name.setText("Your Location");
                 }
                 City city = new City(values.get("longitude"), values.get("latitude"));
-                ArrayList<City> cities = new ArrayList<>();
-                cities.add(city);
+                Log.i("LOCATION", city.getLatitude());
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
-                new WebServiceRequestor(cities, params).execute();
+                new WebServiceRequestor(city, params).execute();
             }
         }
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -105,16 +103,15 @@ public class MeteoVille extends ListActivity {
             Log.i("MENU", "Clic sur favoris");
             Intent favIntent = new Intent(this, Favoris.class);
             startActivity(favIntent);
-        }
-        else if (id == R.id.location){
+        } else if (id == R.id.location) {
             Log.i("MENU", "Clic sur location");
             double[] location = getGPS();
 
             Intent cityIntent = new Intent(this, MeteoVille.class);
             String latitude = String.valueOf(location[0]);
             String longitude = String.valueOf(location[1]);
-            cityIntent.putExtra("latitude",latitude);
-            cityIntent.putExtra("longitude",longitude);
+            cityIntent.putExtra("latitude", latitude);
+            cityIntent.putExtra("longitude", longitude);
             cityIntent.putExtra("location", "true");
             Log.i("LOCATION", latitude);
             Log.i("LOCATION", longitude);
@@ -130,7 +127,7 @@ public class MeteoVille extends ListActivity {
 /* Loop over the array backwards, and if you get an accurate location, then break                 out the loop*/
         Location l = null;
 
-        for (int i=providers.size()-1; i>=0; i--) {
+        for (int i = providers.size() - 1; i >= 0; i--) {
             l = lm.getLastKnownLocation(providers.get(i));
             if (l != null) break;
         }
@@ -143,21 +140,21 @@ public class MeteoVille extends ListActivity {
         return gps;
     }
 
-    private String toCelsius(String kelvin){
+    private String toCelsius(String kelvin) {
         double kelvinNb = Double.parseDouble(kelvin);
         NumberFormat nf = new DecimalFormat("0");
         String celsius = nf.format(kelvinNb - 273.15);
         return celsius;
     }
 
-    private class WebServiceRequestor extends AsyncTask<String, Void, ArrayList<String>> {
+    private class WebServiceRequestor extends AsyncTask<String, Void, String> {
         private ProgressDialog pDialog;
-        ArrayList<City> cities;
+        City city;
         List<NameValuePair> parameters;
         String defaultURLBeginning;
         String defaultURLEnd;
 
-        public WebServiceRequestor(ArrayList<City> cities, List<NameValuePair> params) {
+        public WebServiceRequestor(City city, List<NameValuePair> params) {
             this.defaultURLBeginning = "http://www.infoclimat.fr/public-api/gfs/json?_ll=";
             this.defaultURLEnd = "&_auth=ABoEEw5wU3ECL1ptB3FVfFE5AjcBdwUiVC" +
                     "hXNFw5Uy4Eb1Q1D28GYFE%2FA35TfFJkU34CYQswUmILYAJ6DH5RMABqBGgOZVM0" +
@@ -165,88 +162,89 @@ public class MeteoVille extends ListActivity {
                     "2wCZwxlUTIAYwRiDmRTNQJtWicHKFVkUWYCNwE%2BBTVUYVc3XGJTYwRiVDMPZQ" +
                     "ZjUTwDf1NmUmdTaAJnCzxSagtoAmMMflEtABoEEw5wU3ECL1ptB3FVfFE3AjwBag%3" +
                     "D%3D&_c=e0a28c0708e4309b36a9bfabf9763677";
-            this.cities = cities;
+            this.city = city;
             this.parameters = params;
         }
 
         @Override
-        protected ArrayList<String> doInBackground(String... params) {
-            ArrayList<String> returns = new ArrayList<>();
-            for (City city : cities) {
-                try {
-                    DefaultHttpClient httpClient = new DefaultHttpClient();
-                    HttpEntity httpEntity = null;
-                    HttpResponse httpResponse = null;
-                    String URL = this.defaultURLBeginning + city.getLatitude() + "," + city.getLongitude() + this.defaultURLEnd;
-                    HttpPost httpPost = new HttpPost(URL);
-                    if (parameters != null) {
-                        httpPost.setEntity(new UrlEncodedFormEntity(parameters));
-                    }
-                    httpResponse = httpClient.execute(httpPost);
-                    httpEntity = httpResponse.getEntity();
-                    returns.add(EntityUtils.toString(httpEntity));
-                    //return EntityUtils.toString(httpEntity);
-                } catch (Exception e) {
+        protected String doInBackground(String... params) {
+            String returns = "";
+            try {
+                DefaultHttpClient httpClient = new DefaultHttpClient();
+                HttpEntity httpEntity = null;
+                HttpResponse httpResponse = null;
+                String URL = this.defaultURLBeginning + city.getLatitude() + "," + city.getLongitude() + this.defaultURLEnd;
+                HttpPost httpPost = new HttpPost(URL);
+                if (parameters != null) {
+                    httpPost.setEntity(new UrlEncodedFormEntity(parameters));
                 }
-                Log.i("BACKGROUND", Integer.toString(cities.size()));
-                Log.i("BACKGROUND", Integer.toString(returns.size()));
+                httpResponse = httpClient.execute(httpPost);
+                httpEntity = httpResponse.getEntity();
+                returns = EntityUtils.toString(httpEntity);
+                //return EntityUtils.toString(httpEntity);
+            } catch (Exception e) {
             }
             return returns;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<String> results) {
+        protected void onPostExecute(String results) {
             Log.i("POST", "Entre dans le post-execute");
             pDialog.dismiss();
 
-            ArrayList<HashMap<String, String>> listItem = new ArrayList<HashMap<String, String>>();
+            ArrayList<HashMap<String, String>> listItem = new ArrayList<>();
             HashMap<String, String> map;
-            for (int i = 0; i < cities.size(); i++) {
-                map = new HashMap<String, String>();
-                String result = results.get(i);
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                City currentCity = cities.get(i);
-                //map.put("name", currentCity.getName());
-                //map.put("longitude", currentCity.getLongitude());
-                //map.put("latitude", currentCity.getLatitude());
-                Log.i("POSTEXECUTE", currentCity.getLongitude());
+            map = new HashMap<String, String>();
+            String result = results;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            City currentCity = city;
+            //map.put("name", currentCity.getName());
+            //map.put("longitude", currentCity.getLongitude());
+            //map.put("latitude", currentCity.getLatitude());
+            Log.i("POSTEXECUTE", currentCity.getLongitude());
 
-                String date_today = sdf.format(new Date());
-                Calendar c = Calendar.getInstance();
-                Date dt = new Date();
-                c.setTime(dt);
-                c.add(Calendar.DATE, 1);
-                dt = c.getTime();
-                String date_tomorrow = sdf.format(dt);
-                c.setTime(dt);
-                c.add(Calendar.DATE, 1);
-                dt = c.getTime();
-                String date_2_days_later = sdf.format(dt);
-                ArrayList<String> dates = new ArrayList<String>();
-                dates.add(date_today);
-                dates.add(date_tomorrow);
-                dates.add(date_2_days_later);
+            String date_today = sdf.format(new Date());
+            Calendar c = Calendar.getInstance();
+            Date dt = new Date();
+            c.setTime(dt);
+            c.add(Calendar.DATE, 1);
+            dt = c.getTime();
+            String date_tomorrow = sdf.format(dt);
+            c.setTime(dt);
+            c.add(Calendar.DATE, 1);
+            dt = c.getTime();
+            String date_2_days_later = sdf.format(dt);
+            ArrayList<String> dates = new ArrayList<String>();
+            dates.add(date_today);
+            dates.add(date_tomorrow);
+            dates.add(date_2_days_later);
 
-                try {
-                    JSONObject theObject = new JSONObject(result);
-                    for (int j = 0; j < dates.size(); j++) {
-                        String current_date = dates.get(j);
-                        map = new HashMap<String, String>();
-                        Log.i("DATE", current_date.toString());
-                        map.put("date", dates.get(j));
-                        map.put("temp", toCelsius(theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol")) + "°C");
-                        map.put("pluie", theObject.getJSONObject(current_date + " 15:00:00").getString("pluie") + "mm");
-                        map.put("vent", theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m") + "km/h");
-                        listItem.add(map);
-                    }
-
-                } catch (Exception e) {
-                    map.put("temp", "Error during process");
+            try {
+                JSONObject theObject = new JSONObject(result);
+                for (int j = 0; j < dates.size(); j++) {
+                    String current_date = dates.get(j);
+                    map = new HashMap<String, String>();
+                    Log.i("DATE", current_date.toString());
+                    map.put("date", dates.get(j));
+                    map.put("temp", toCelsius(theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("temperature").getString("sol")) + "°C");
+                    Log.i("TEMP", map.get("temp"));
+                    map.put("pluie", theObject.getJSONObject(current_date + " 15:00:00").getString("pluie") + "mm");
+                    Log.i("PLUIE", map.get("pluie"));
+                    map.put("vent", theObject.getJSONObject(current_date + " 15:00:00").getJSONObject("vent_moyen").getString("10m") + "km/h");
+                    Log.i("VENT", map.get("vent"));
+                    listItem.add(map);
                 }
+
+            } catch (Exception e) {
+                map.put("temp", "Error during process");
+                map.put("vent", currentCity.getLatitude());
+                map.put("pluie", currentCity.getLongitude());
+                listItem.add(map);
             }
+
             SimpleAdapter mSchedule = new SimpleAdapter(MeteoVille.this.getBaseContext(), listItem,
                     R.layout.activity_meteo_ville,
-                    new String[]{"date", "pluie", "temp", "vent"}, new int[]{R.id.date, R.id.pluie,
+                    new String[]{"date", "pluie", "temp", "vent"}, new int[]{R.id.name, R.id.pluie,
                     R.id.temp, R.id.vent});
             MeteoVille.this.setListAdapter(mSchedule);
             super.onPostExecute(results);

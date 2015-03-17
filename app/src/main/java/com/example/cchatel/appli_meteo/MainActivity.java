@@ -242,7 +242,7 @@ public class MainActivity extends ListActivity {
             }
             SimpleAdapter mSchedule = new SimpleAdapter (MainActivity.this.getBaseContext(), listItem,
                     R.layout.activity_main,
-                    new String[] {"name", "temp0"}, new int[] {R.id.date, R.id.txt});
+                    new String[] {"name", "temp0"}, new int[] {R.id.name, R.id.txt});
             MainActivity.this.setListAdapter(mSchedule);
             super.onPostExecute(results);
         }

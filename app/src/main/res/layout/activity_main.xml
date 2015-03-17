@@ -23,16 +23,16 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
         android:id="@+id/txt"
-        android:layout_below="@+id/date"
-        android:layout_alignRight="@+id/date"
-        android:layout_alignEnd="@+id/date" />
+        android:layout_below="@+id/name"
+        android:layout_alignRight="@+id/name"
+        android:layout_alignEnd="@+id/name" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
-        android:id="@+id/date"
+        android:id="@+id/name"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 

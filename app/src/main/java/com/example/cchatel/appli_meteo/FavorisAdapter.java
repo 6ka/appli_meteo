@@ -49,7 +49,7 @@ public class FavorisAdapter extends BaseAdapter {
             Log.v("test", "convertView is null");
             holder = new ViewHolder();
             convertView = inflater.inflate(R.layout.activity_favoris_sublist, null);
-            holder.name = (TextView) convertView.findViewById(R.id.date);
+            holder.name = (TextView) convertView.findViewById(R.id.name);
             holder.delete = (Button) convertView.findViewById(R.id.button);
             convertView.setTag(holder);
         } else {
